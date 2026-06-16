@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="repair_dashboard.Dashboard" owl="1">
+        <div class="o_repair_dashboard">
+
+            <!-- Encabezado -->
+            <div class="o_rd_header">
+                <div class="o_rd_header_title">
+                    <span class="o_rd_brand">Method</span>
+                    <h1>Tablero de Reparaciones</h1>
+                </div>
+                <div class="o_rd_header_tools">
+                    <select class="o_rd_period_select" t-on-change="onPeriodChange">
+                        <t t-foreach="periods" t-as="p" t-key="p.value">
+                            <option t-att-value="p.value" t-att-selected="p.value === state.period ? 'selected' : false">
+                                <t t-esc="p.label"/>
+                            </option>
+                        </t>
+                    </select>
+                    <button class="btn o_rd_refresh" t-on-click="() => this.reload()">
+                        <i class="fa fa-refresh me-1"/> Actualizar
+                    </button>
+                </div>
+            </div>
+
+            <t t-if="state.loading">
+                <div class="o_rd_loading">
+                    <i class="fa fa-circle-o-notch fa-spin fa-2x"/>
+                    <span>Cargando datos…</span>
+                </div>
+            </t>
+
+            <t t-else="">
+                <!-- Tarjetas KPI -->
+                <div class="o_rd_cards">
+                    <div class="o_rd_card o_rd_card--total" t-on-click="() => this.openOrders([], 'Todas las órdenes')">
+                        <div class="o_rd_card_icon"><i class="fa fa-wrench"/></div>
+                        <div class="o_rd_card_body">
+                            <span class="o_rd_card_value" t-esc="kpis.total_orders"/>
+                            <span class="o_rd_card_label">Total Órdenes</span>
+                        </div>
+                    </div>
+
+                    <div class="o_rd_card" t-on-click="() => this.openOrders([['state','=','draft']], 'Cotizaciones')">
+                        <div class="o_rd_card_icon o_rd_icon--draft"><i class="fa fa-file-text-o"/></div>
+                        <div class="o_rd_card_body">
+                            <span class="o_rd_card_value" t-esc="kpis.draft"/>
+                            <span class="o_rd_card_label">Cotizaciones</span>
+                        </div>
+                    </div>
+
+                    <div class="o_rd_card" t-on-click="() => this.openOrders([['state','=','confirmed']], 'Confirmadas')">
+                        <div class="o_rd_card_icon o_rd_icon--confirmed"><i class="fa fa-check-circle-o"/></div>
+                        <div class="o_rd_card_body">
+                            <span class="o_rd_card_value" t-esc="kpis.confirmed"/>
+                            <span class="o_rd_card_label">Confirmadas</span>
+                        </div>
+                    </div>
+
+                    <div class="o_rd_card" t-on-click="() => this.openOrders([['state','=','under_repair']], 'En Reparación')">
+                        <div class="o_rd_card_icon o_rd_icon--repair"><i class="fa fa-cogs"/></div>
+                        <div class="o_rd_card_body">
+                            <span class="o_rd_card_value" t-esc="kpis.under_repair"/>
+                            <span class="o_rd_card_label">En Reparación</span>
+                        </div>
+                    </div>
+
+                    <div class="o_rd_card" t-on-click="() => this.openOrders([['state','=','2binvoiced']], 'Por Facturar')">
+                        <div class="o_rd_card_icon o_rd_icon--invoice"><i class="fa fa-money"/></div>
+                        <div class="o_rd_card_body">
+                            <span class="o_rd_card_value" t-esc="kpis.to_invoice"/>
+                            <span class="o_rd_card_label">Por Facturar</span>
+                        </div>
+                    </div>
+
+                    <div class="o_rd_card" t-on-click="() => this.openOrders([['state','=','done']], 'Reparadas')">
+                        <div class="o_rd_card_icon o_rd_icon--done"><i class="fa fa-check"/></div>
+                        <div class="o_rd_card_body">
+                            <span class="o_rd_card_value" t-esc="kpis.done"/>
+                            <span class="o_rd_card_label">Reparadas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarjetas de montos -->
+                <div class="o_rd_amounts">
+                    <div class="o_rd_amount_card o_rd_amount--primary">
+                        <span class="o_rd_amount_label">Monto Total</span>
+                        <span class="o_rd_amount_value" t-esc="formatAmount(kpis.total_amount)"/>
+                    </div>
+                    <div class="o_rd_amount_card">
+                        <span class="o_rd_amount_label">Monto en Curso (confirmadas / en reparación)</span>
+                        <span class="o_rd_amount_value" t-esc="formatAmount(kpis.open_amount)"/>
+                    </div>
+                </div>
+
+                <!-- Gráficos -->
+                <div class="o_rd_charts">
+                    <div class="o_rd_chart_box">
+                        <h3>Distribución por Estado</h3>
+                        <div class="o_rd_chart_canvas">
+                            <canvas t-ref="stateChart"/>
+                        </div>
+                    </div>
+                    <div class="o_rd_chart_box">
+                        <h3>Órdenes por Mes (últimos 12 meses)</h3>
+                        <div class="o_rd_chart_canvas">
+                            <canvas t-ref="trendChart"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Productos más reparados -->
+                <div class="o_rd_products">
+                    <div class="o_rd_chart_box">
+                        <h3><i class="fa fa-cube me-2"/>Productos más Reparados</h3>
+                        <t t-if="state.data.by_product.length">
+                            <table class="o_rd_product_table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Producto</th>
+                                        <th class="text-end">Órdenes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="state.data.by_product" t-as="prod" t-key="prod.id"
+                                        t-on-click="() => this.openOrders([['product_id','=',prod.id]], prod.name)">
+                                        <td class="o_rd_rank" t-esc="prod_index + 1"/>
+                                        <td t-esc="prod.name"/>
+                                        <td class="text-end">
+                                            <span class="o_rd_product_badge" t-esc="prod.count"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
+                        <t t-else="">
+                            <div class="o_rd_empty">Sin datos para el periodo seleccionado.</div>
+                        </t>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+
+</templates>
