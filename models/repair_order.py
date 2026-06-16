@@ -44,16 +44,18 @@ class RepairOrder(models.Model):
         """Devuelve KPIs y series de datos para el tablero de reparaciones."""
         state_labels = dict(self._fields["state"].selection)
 
-        # --- Dominio según el periodo seleccionado -----------------------------
+        # --- Dominio base: compañía actual + periodo seleccionado --------------
+        company_id = self.env.company.id
+        base_domain = [("company_id", "=", company_id)]
         rng = self._dashboard_period_range(period)
-        domain = []
-        active_domain = []
+        domain = list(base_domain)
+        active_domain = list(base_domain)
         if rng:
             date_from, date_to = rng
             start_dt = fields.Datetime.to_string(datetime.combine(date_from, time.min))
             end_dt = fields.Datetime.to_string(datetime.combine(date_to, time.min))
-            domain = [("create_date", ">=", start_dt), ("create_date", "<", end_dt)]
-            active_domain = list(domain)
+            domain += [("create_date", ">=", start_dt), ("create_date", "<", end_dt)]
+            active_domain += [("create_date", ">=", start_dt), ("create_date", "<", end_dt)]
 
         # --- Conteo por estado -------------------------------------------------
         grouped = self.read_group(domain, ["state"], ["state"])
@@ -112,7 +114,8 @@ class RepairOrder(models.Model):
             start_dt = datetime.combine(month_start, time.min)
             end_dt = datetime.combine(month_end, time.min)
             count = self.search_count(
-                [("create_date", ">=", start_dt), ("create_date", "<", end_dt)]
+                base_domain
+                + [("create_date", ">=", start_dt), ("create_date", "<", end_dt)]
             )
             months.append(month_start.strftime("%m/%Y"))
             monthly_counts.append(count)
