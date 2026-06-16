@@ -1,0 +1,273 @@
+// Paleta corporativa Method (tomada del logo)
+$rd-orange: #F5841F;
+$rd-orange-light: #FBB040;
+$rd-slate: #455160;
+$rd-slate-light: #6B7787;
+$rd-slate-dark: #2F3845;
+$rd-bg: #F4F6F9;
+
+.o_repair_dashboard {
+    background: $rd-bg;
+    padding: 24px;
+    height: 100%;
+    overflow: auto;
+    font-family: inherit;
+
+    // -------- Encabezado --------
+    .o_rd_header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        background: linear-gradient(120deg, $rd-slate-dark 0%, $rd-slate 100%);
+        border-left: 6px solid $rd-orange;
+        color: #fff;
+        border-radius: 14px;
+        padding: 20px 28px;
+        margin-bottom: 24px;
+        box-shadow: 0 6px 18px rgba(47, 56, 69, 0.18);
+
+        .o_rd_brand {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: $rd-orange-light !important;
+        }
+        h1 {
+            margin: 2px 0 0;
+            font-size: 26px;
+            font-weight: 700;
+            color: #ffffff !important;
+        }
+
+        .o_rd_header_tools {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .o_rd_period_select {
+            background: rgba(255, 255, 255, 0.95);
+            color: $rd-slate-dark;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-weight: 600;
+            min-width: 190px;
+            cursor: pointer;
+            &:focus {
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(245, 132, 31, 0.35);
+            }
+        }
+        .o_rd_refresh {
+            background: $rd-orange;
+            color: #fff !important;
+            border: 1px solid $rd-orange;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 600;
+            white-space: nowrap;
+            &:hover {
+                background: $rd-orange-light;
+                border-color: $rd-orange-light;
+            }
+        }
+    }
+
+    // -------- Estado de carga --------
+    .o_rd_loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        padding: 80px 0;
+        color: $rd-slate;
+        font-size: 16px;
+    }
+
+    // -------- Tarjetas KPI --------
+    .o_rd_cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+    .o_rd_card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: #fff;
+        border-radius: 12px;
+        padding: 18px 20px;
+        cursor: pointer;
+        border: 1px solid #E7ECF1;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        &:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 22px rgba(47, 56, 69, 0.14);
+            border-color: $rd-orange;
+        }
+
+        .o_rd_card_icon {
+            flex: 0 0 auto;
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #fff;
+            background: $rd-slate;
+
+            &.o_rd_icon--draft { background: #94A3B8; }
+            &.o_rd_icon--confirmed { background: $rd-slate; }
+            &.o_rd_icon--repair { background: $rd-orange; }
+            &.o_rd_icon--invoice { background: #D97706; }
+            &.o_rd_icon--done { background: #16A34A; }
+        }
+        .o_rd_card_body {
+            display: flex;
+            flex-direction: column;
+        }
+        .o_rd_card_value {
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1;
+            color: $rd-slate-dark;
+        }
+        .o_rd_card_label {
+            font-size: 13px;
+            color: $rd-slate-light;
+            margin-top: 4px;
+        }
+
+        &.o_rd_card--total {
+            background: linear-gradient(135deg, $rd-orange 0%, $rd-orange-light 100%);
+            border: none;
+            .o_rd_card_icon { background: rgba(255, 255, 255, 0.25); }
+            .o_rd_card_value,
+            .o_rd_card_label { color: #fff; }
+        }
+    }
+
+    // -------- Tarjetas de montos --------
+    .o_rd_amounts {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+    .o_rd_amount_card {
+        background: #fff;
+        border: 1px solid #E7ECF1;
+        border-left: 5px solid $rd-slate;
+        border-radius: 12px;
+        padding: 18px 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+
+        .o_rd_amount_label {
+            font-size: 13px;
+            color: $rd-slate-light;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .o_rd_amount_value {
+            font-size: 26px;
+            font-weight: 700;
+            color: $rd-slate-dark;
+        }
+        &.o_rd_amount--primary {
+            border-left-color: $rd-orange;
+            .o_rd_amount_value { color: $rd-orange; }
+        }
+    }
+
+    // -------- Gráficos --------
+    .o_rd_charts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+
+        @media (max-width: 1100px) {
+            grid-template-columns: 1fr;
+        }
+    }
+    .o_rd_chart_box {
+        background: #fff;
+        border: 1px solid #E7ECF1;
+        border-radius: 12px;
+        padding: 18px 22px;
+
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: $rd-slate-dark;
+            margin: 0 0 14px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid $rd-bg;
+        }
+        .o_rd_chart_canvas {
+            position: relative;
+            height: 300px;
+        }
+    }
+
+    // -------- Productos más reparados --------
+    .o_rd_products {
+        margin-top: 18px;
+
+        .o_rd_product_table {
+            width: 100%;
+            border-collapse: collapse;
+
+            thead th {
+                text-align: left;
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: $rd-slate-light;
+                padding: 8px 12px;
+                border-bottom: 2px solid $rd-bg;
+            }
+            tbody tr {
+                cursor: pointer;
+                transition: background 0.12s ease;
+                &:hover {
+                    background: rgba(245, 132, 31, 0.08);
+                }
+            }
+            tbody td {
+                padding: 10px 12px;
+                border-bottom: 1px solid #EEF2F6;
+                color: $rd-slate-dark;
+                font-size: 14px;
+            }
+            .o_rd_rank {
+                font-weight: 700;
+                color: $rd-slate-light;
+                width: 48px;
+            }
+            .o_rd_product_badge {
+                display: inline-block;
+                min-width: 34px;
+                padding: 3px 10px;
+                border-radius: 20px;
+                background: $rd-orange;
+                color: #fff;
+                font-weight: 700;
+                font-size: 13px;
+            }
+        }
+        .o_rd_empty {
+            padding: 24px;
+            text-align: center;
+            color: $rd-slate-light;
+        }
+    }
+}
