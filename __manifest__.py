@@ -1,6 +1,6 @@
 {
     'name': 'Tablero de Reparaciones',
-    'version': '16.0.1.2.0',
+    'version': '16.0.1.3.0',
     'category': 'Inventory/Repair',
     'summary': 'Dashboard analítico para órdenes de reparación (repair.order)',
     'description': """
