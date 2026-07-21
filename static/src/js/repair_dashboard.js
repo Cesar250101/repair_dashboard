@@ -169,8 +169,9 @@ export class RepairDashboard extends Component {
     }
 
     // Abre la lista de órdenes filtrada por estado (+ periodo) al hacer clic en una KPI
-    openOrders(domain, title) {
-        const dateDomain = (this.state.data && this.state.data.active_domain) || [];
+    openOrders(domain, title, withPeriod = true) {
+        const data = this.state.data || {};
+        const dateDomain = withPeriod ? (data.active_domain || []) : (data.base_domain || []);
         this.action.doAction({
             type: "ir.actions.act_window",
             name: title,

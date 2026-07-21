@@ -89,6 +89,16 @@ $rd-bg: #F4F6F9;
     }
 
     // -------- Tarjetas KPI --------
+    .o_rd_deadline_cards {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(220px, 1fr));
+        gap: 18px;
+        margin-bottom: 18px;
+
+        @media (max-width: 900px) {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+    }
     .o_rd_cards {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -124,6 +134,9 @@ $rd-bg: #F4F6F9;
             background: $rd-slate;
 
             &.o_rd_icon--draft { background: #94A3B8; }
+            &.o_rd_icon--on-time { background: #16A34A; }
+            &.o_rd_icon--near-due { background: #D97706; }
+            &.o_rd_icon--overdue { background: #DC2626; }
             &.o_rd_icon--confirmed { background: $rd-slate; }
             &.o_rd_icon--repair { background: $rd-orange; }
             &.o_rd_icon--invoice { background: #D97706; }

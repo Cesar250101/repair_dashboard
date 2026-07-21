@@ -1,6 +1,6 @@
 {
     'name': 'Tablero de Reparaciones',
-    'version': '16.0.1.3.0',
+    'version': '16.0.1.5.4',
     'category': 'Inventory/Repair',
     'summary': 'Dashboard analítico para órdenes de reparación (repair.order)',
     'description': """
@@ -12,7 +12,7 @@ muestra por defecto al ingresar al módulo. Presenta KPIs y gráficos de las
 """,
     'author': 'Method',
     'website': 'https://method.cl',
-    'depends': ['repair', 'web'],
+    'depends': ['repair', 'web', 'base_localizacion_clientes'],
     'data': [
         'views/repair_dashboard_views.xml',
     ],

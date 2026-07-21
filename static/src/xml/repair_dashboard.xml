@@ -32,7 +32,34 @@
             </t>
 
             <t t-else="">
-                <!-- Tarjetas KPI -->
+                <!-- Indicadores de cumplimiento de plazo RMA -->
+                <div class="o_rd_deadline_cards">
+                    <div class="o_rd_card" t-on-click="() => this.openOrders([['id','in', kpis.rma_on_time_ids]], 'RMA en Tiempo', false)">
+                        <div class="o_rd_card_icon o_rd_icon--on-time"><i class="fa fa-clock-o"/></div>
+                        <div class="o_rd_card_body">
+                            <span class="o_rd_card_value" t-esc="kpis.rma_on_time"/>
+                            <span class="o_rd_card_label">RMA en Tiempo</span>
+                        </div>
+                    </div>
+
+                    <div class="o_rd_card" t-on-click="() => this.openOrders([['id','in', kpis.rma_near_due_ids]], 'RMA Próximas a Vencer', false)">
+                        <div class="o_rd_card_icon o_rd_icon--near-due"><i class="fa fa-exclamation-circle"/></div>
+                        <div class="o_rd_card_body">
+                            <span class="o_rd_card_value" t-esc="kpis.rma_near_due"/>
+                            <span class="o_rd_card_label">RMA Próximas a Vencer</span>
+                        </div>
+                    </div>
+
+                    <div class="o_rd_card" t-on-click="() => this.openOrders([['id','in', kpis.rma_overdue_ids]], 'RMA Fuera de Plazo', false)">
+                        <div class="o_rd_card_icon o_rd_icon--overdue"><i class="fa fa-calendar-times-o"/></div>
+                        <div class="o_rd_card_body">
+                            <span class="o_rd_card_value" t-esc="kpis.rma_overdue"/>
+                            <span class="o_rd_card_label">RMA Fuera de Plazo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarjetas KPI generales -->
                 <div class="o_rd_cards">
                     <div class="o_rd_card o_rd_card--total" t-on-click="() => this.openOrders([], 'Todas las órdenes')">
                         <div class="o_rd_card_icon"><i class="fa fa-wrench"/></div>

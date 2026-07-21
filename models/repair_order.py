@@ -7,6 +7,56 @@ from odoo import api, fields, models
 class RepairOrder(models.Model):
     _inherit = "repair.order"
 
+    # Estados terminales que no participan del seguimiento de plazo RMA.
+    _RMA_DEADLINE_EXCLUDED_STATES = ("done", "cancel")
+
+    @api.model
+    def _get_rma_deadline_kpis(self, domain):
+        """Clasifica las RMA activas según su fecha límite y programación.
+
+        ``fecha_rma`` es la fecha límite de la RMA y ``schedule_date`` la
+        fecha programada. Las RMA sin fecha programada se consideran en
+        tiempo. Una RMA con fecha programada anterior a hoy siempre está fuera
+        de plazo. Las restantes son próximas a vencer cuando su fecha límite
+        está dentro de los siguientes siete días.
+        """
+        today = fields.Date.context_today(self)
+        warning_date = today + relativedelta(days=7)
+        orders = self.search(
+            domain
+            + [
+                ("fecha_rma", "!=", False),
+                ("state", "not in", self._RMA_DEADLINE_EXCLUDED_STATES),
+            ]
+        )
+        on_time_ids = []
+        near_due_ids = []
+        overdue_ids = []
+
+        for order in orders:
+            if not order.schedule_date:
+                on_time_ids.append(order.id)
+                continue
+
+            scheduled_date = fields.Datetime.to_datetime(order.schedule_date).date()
+            deadline = order.fecha_rma
+
+            if scheduled_date < today or scheduled_date > deadline or deadline < today:
+                overdue_ids.append(order.id)
+            elif deadline <= warning_date:
+                near_due_ids.append(order.id)
+            else:
+                on_time_ids.append(order.id)
+
+        return {
+            "rma_on_time": len(on_time_ids),
+            "rma_on_time_ids": on_time_ids,
+            "rma_near_due": len(near_due_ids),
+            "rma_near_due_ids": near_due_ids,
+            "rma_overdue": len(overdue_ids),
+            "rma_overdue_ids": overdue_ids,
+        }
+
     @api.model
     def _dashboard_period_range(self, period):
         """Devuelve (date_from, date_to) como objetos date para el periodo dado.
@@ -56,6 +106,11 @@ class RepairOrder(models.Model):
             end_dt = fields.Datetime.to_string(datetime.combine(date_to, time.min))
             domain += [("create_date", ">=", start_dt), ("create_date", "<", end_dt)]
             active_domain += [("create_date", ">=", start_dt), ("create_date", "<", end_dt)]
+
+        # --- Cumplimiento de plazos RMA --------------------------------------
+        # Los plazos RMA se siguen para todas las órdenes activas de la
+        # compañía, sin depender del período de creación del tablero.
+        rma_deadline_kpis = self._get_rma_deadline_kpis(base_domain)
 
         # --- Conteo por estado -------------------------------------------------
         grouped = self.read_group(domain, ["state"], ["state"])
@@ -131,11 +186,13 @@ class RepairOrder(models.Model):
                 "cancel": counts.get("cancel", 0),
                 "total_amount": total_amount,
                 "open_amount": open_amount,
+                **rma_deadline_kpis,
             },
             "by_state": by_state,
             "by_product": by_product,
             "trend": {"labels": months, "values": monthly_counts},
             "currency": {"symbol": currency.symbol, "position": currency.position},
             "period": period,
+            "base_domain": base_domain,
             "active_domain": active_domain,
         }
